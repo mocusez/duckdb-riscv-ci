@@ -7,7 +7,6 @@ RUN apt-get update && apt-get install -y \
     openssh-server \
     screen \
     sshpass \
-    opensbi \
     wget \
     unzip \
     cmake \
@@ -34,7 +33,6 @@ screen -dmS qemu qemu-system-riscv64 \\\n\
   -drive file=dqib_riscv64-virt/image.qcow2,if=none,id=hd \\\n\
   -device virtio-net-device,netdev=net \\\n\
   -netdev user,id=net,hostfwd=tcp::2222-:22 \\\n\
-  -bios /usr/lib/riscv64-linux-gnu/opensbi/generic/fw_jump.elf \\\n\
   -kernel /usr/lib/u-boot/qemu-riscv64_smode/uboot.elf \\\n\
   -append "root=LABEL=rootfs console=ttyS0" \\\n\
   -nographic' > /riscv-env/start-qemu.sh && \
