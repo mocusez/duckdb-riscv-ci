@@ -1,0 +1,30 @@
+name: Build(RISC-V)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependent and start environment
+        run: |
+          sudo apt-get install -y qemu-system u-boot-qemu openssh-server screen sshpass
+          screen -dmS qemu ./qemu_system_run.sh
+
+      - name: Add QEMU Login
+        run: |
+          ./login.sh
+
+      - name: Build RISC-V Version DuckDB
+        run: |
+          ssh -p 2222 root@localhost "apt-get update && apt-get install -y git g++ cmake ninja-build libssl-dev"
+          ssh -p 2222 root@localhost "git clone https://github.com/duckdb/duckdb.git"
+          ssh -p 2222 root@localhost "cd duckdb && CORE_EXTENSIONS='tpch' GEN=ninja CC='gcc -march=rv64gcv_zicsr_zifencei_zihintpause_zvl256b' CXX='g++ -march=rv64gcv_zicsr_zifencei_zihintpause_zvl256b'  make"
+      
