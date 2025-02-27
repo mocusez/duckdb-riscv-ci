@@ -2,7 +2,7 @@ FROM debian:sid
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
-    qemu-system \
+    qemu-system-riscv \
     u-boot-qemu \
     openssh-server \
     screen \
