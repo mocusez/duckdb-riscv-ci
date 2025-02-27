@@ -32,6 +32,9 @@ jobs:
             -append "root=LABEL=rootfs console=ttyS0" \
             -nographic
 
+      - name: Wait for QEMU to start
+        run: sleep 120
+
       - name: Install DuckDB Dependencies
         run: |
           sshpass -p 'root' ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -p 2222 root@localhost "apt-get update && apt-get install -y git g++ cmake ninja-build libssl-dev"
