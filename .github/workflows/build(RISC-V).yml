@@ -18,7 +18,7 @@ jobs:
           sudo apt-get install -y qemu-system u-boot-qemu openssh-server screen sshpass opensbi
           wget -O debian.zip https://gitlab.com/api/v4/projects/giomasce%2Fdqib/jobs/artifacts/master/download?job=convert_riscv64-virt
           unzip debian.zip
-          qemu-system-riscv64 \
+          screen -dmS qemu qemu-system-riscv64 \
             -machine virt \
             -cpu rv64,zba=true,zbb=true,v=true,vlen=256,vext_spec=v1.0,rvv_ta_all_1s=true,rvv_ma_all_1s=true \
             -smp 4 \
@@ -31,7 +31,9 @@ jobs:
             -kernel /usr/lib/u-boot/qemu-riscv64_smode/uboot.elf \
             -append "root=LABEL=rootfs console=ttyS0" \
             -nographic
-
+      
+      - name: Wait for qemu to start
+        run: sleep 60
 
       - name: Build RISC-V Version DuckDB
         run: |
