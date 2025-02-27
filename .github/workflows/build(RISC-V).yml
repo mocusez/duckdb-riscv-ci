@@ -33,7 +33,7 @@ jobs:
             -nographic
       
       - name: Wait for qemu to start
-        run: sleep 60
+        run: sleep 180
 
       - name: Build RISC-V Version DuckDB
         run: |
