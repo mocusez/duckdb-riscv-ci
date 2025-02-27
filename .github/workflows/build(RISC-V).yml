@@ -33,11 +33,11 @@ jobs:
             -nographic
       
       - name: Wait for qemu to start
-        run: sleep 180
+        run: sleep 150
 
       - name: Build RISC-V Version DuckDB
         run: |
-          sshpass -p 'root' ssh -p 2222 root@localhost "apt-get update && apt-get install -y git g++ cmake ninja-build libssl-dev"
-          sshpass -p 'root' ssh -p 2222 root@localhost "git clone https://github.com/duckdb/duckdb.git"
-          sshpass -p 'root' ssh -p 2222 root@localhost "cd duckdb && CORE_EXTENSIONS='tpch' GEN=ninja CC='gcc -march=rv64gcv_zicsr_zifencei_zihintpause_zvl256b' CXX='g++ -march=rv64gcv_zicsr_zifencei_zihintpause_zvl256b'  make"
+          sshpass -p 'root' ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -p 2222 root@localhost "apt-get update && apt-get install -y git g++ cmake ninja-build libssl-dev"
+          sshpass -p 'root' ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -p 2222 root@localhost "git clone https://github.com/duckdb/duckdb.git"
+          sshpass -p 'root' ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -p 2222 root@localhost "cd duckdb && CORE_EXTENSIONS='tpch' GEN=ninja CC='gcc -march=rv64gcv_zicsr_zifencei_zihintpause_zvl256b' CXX='g++ -march=rv64gcv_zicsr_zifencei_zihintpause_zvl256b'  make"
       
