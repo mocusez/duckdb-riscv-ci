@@ -13,34 +13,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install QEMU and OpenSBI
+      - name: Login to GitHub Container Registry
         run: |
-          sudo apt-get install -y qemu-system u-boot-qemu openssh-server screen sshpass opensbi
-          wget -O debian.zip https://gitlab.com/api/v4/projects/giomasce%2Fdqib/jobs/artifacts/master/download?job=convert_riscv64-virt
-          unzip debian.zip
-          screen -dmS qemu qemu-system-riscv64 \
-            -machine virt \
-            -cpu rv64,zba=true,zbb=true,v=true,vlen=256,vext_spec=v1.0,rvv_ta_all_1s=true,rvv_ma_all_1s=true \
-            -smp 4 \
-            -m 8G \
-            -device virtio-blk-device,drive=hd \
-            -drive file=dqib_riscv64-virt/image.qcow2,if=none,id=hd \
-            -device virtio-net-device,netdev=net \
-            -netdev user,id=net,hostfwd=tcp::2222-:22 \
-            -bios /usr/lib/riscv64-linux-gnu/opensbi/generic/fw_jump.elf \
-            -kernel /usr/lib/u-boot/qemu-riscv64_smode/uboot.elf \
-            -append "root=LABEL=rootfs console=ttyS0" \
-            -nographic
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Wait for QEMU to start
-        run: sleep 120
-
-      - name: Install DuckDB Dependencies
+      - name: Build Docker Image
         run: |
-          sshpass -p 'root' ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -p 2222 root@localhost "apt-get update && apt-get install -y git g++ cmake ninja-build libssl-dev"
-          sshpass -p 'root' ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -p 2222 root@localhost "git clone https://github.com/duckdb/duckdb.git"
+          docker build -t riscv-duckdb -f Dockerfile .
+      
+      - name: Tag Docker Image
+        run: docker tag riscv-duckdb ghcr.io/mocusez/duck/riscv-duckdb:latest
+      
+      - name: Push Docker Image
+        run: docker push ghcr.io/mocusez/duck/riscv-duckdb:latest
 
-      - name: Build RISC-V Version DuckDB
-        run: |
-          sshpass -p 'root' ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -p 2222 root@localhost "cd duckdb && GEN=ninja CC='gcc -march=rv64gcv_zicsr_zifencei_zihintpause_zvl256b' CXX='g++ -march=rv64gcv_zicsr_zifencei_zihintpause_zvl256b' make && ./build/release/duckdb -c 'PRAGMA platform;' && make clean && echo 'DOCKER TEST RESULT: SUCCESS' || (echo 'DOCKER TEST RESULT: FAILURE' && make clean)"
+      
       
