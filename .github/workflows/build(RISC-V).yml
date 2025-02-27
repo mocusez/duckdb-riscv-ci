@@ -29,16 +29,9 @@ jobs:
             -append "root=LABEL=rootfs console=ttyS0" \
             -nographic
 
-      - name: Add QEMU Login
-        run: |
-          ssh-keygen -t rsa -b 4096 -N "" -f ~/.ssh/id_rsa
-          echo -e "Host *\n    StrictHostKeyChecking no\n    UserKnownHostsFile /dev/null" >> ~/.ssh/config
-          chmod 600 ~/.ssh/config
-          sshpass -p 'root' ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -p 2222 -q root@localhost "mkdir -p ~/.ssh && chmod 700 ~/.ssh && echo $(cat ~/.ssh/id_rsa.pub) >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys" > /dev/null 2>&1
-
       - name: Build RISC-V Version DuckDB
         run: |
-          ssh -p 2222 root@localhost "apt-get update && apt-get install -y git g++ cmake ninja-build libssl-dev"
-          ssh -p 2222 root@localhost "git clone https://github.com/duckdb/duckdb.git"
-          ssh -p 2222 root@localhost "cd duckdb && CORE_EXTENSIONS='tpch' GEN=ninja CC='gcc -march=rv64gcv_zicsr_zifencei_zihintpause_zvl256b' CXX='g++ -march=rv64gcv_zicsr_zifencei_zihintpause_zvl256b'  make"
+          sshpass -p 'root' ssh -p 2222 root@localhost "apt-get update && apt-get install -y git g++ cmake ninja-build libssl-dev"
+          sshpass -p 'root' ssh -p 2222 root@localhost "git clone https://github.com/duckdb/duckdb.git"
+          sshpass -p 'root' ssh -p 2222 root@localhost "cd duckdb && CORE_EXTENSIONS='tpch' GEN=ninja CC='gcc -march=rv64gcv_zicsr_zifencei_zihintpause_zvl256b' CXX='g++ -march=rv64gcv_zicsr_zifencei_zihintpause_zvl256b'  make"
       
