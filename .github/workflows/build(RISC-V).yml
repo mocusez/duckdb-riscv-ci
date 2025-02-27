@@ -29,6 +29,9 @@ jobs:
             -append "root=LABEL=rootfs console=ttyS0" \
             -nographic
 
+      - name: Wait for qemu to start
+        run: sleep 60
+
       - name: Build RISC-V Version DuckDB
         run: |
           sshpass -p 'root' ssh -p 2222 root@localhost "apt-get update && apt-get install -y git g++ cmake ninja-build libssl-dev"
