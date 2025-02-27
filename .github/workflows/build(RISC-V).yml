@@ -16,7 +16,7 @@ jobs:
       - name: Install dependent and start environment
         run: |
           sudo apt-get install -y qemu-system u-boot-qemu openssh-server screen sshpass opensbi
-          chmod 644 image.qcow2
+          chmod 777 image.qcow2
           qemu-system-riscv64 \
             -machine virt \
             -cpu rv64,zba=true,zbb=true,v=true,vlen=256,vext_spec=v1.0,rvv_ta_all_1s=true,rvv_ma_all_1s=true \
