@@ -8,11 +8,7 @@ RUN apt-get update && apt-get install -y \
     screen \
     sshpass \
     wget \
-    unzip \
-    cmake \
-    ninja-build \
-    libssl-dev \
-    g++-riscv64-linux-gnu
+    unzip
 
 # Download and extract Debian image
 RUN wget -O debian.zip https://gitlab.com/api/v4/projects/giomasce%2Fdqib/jobs/artifacts/master/download?job=convert_riscv64-virt && \
