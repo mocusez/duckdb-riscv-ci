@@ -23,7 +23,7 @@ RUN wget -O debian.zip https://gitlab.com/api/v4/projects/giomasce%2Fdqib/jobs/a
     unzip debian.zip
 
 # Copy startup script
-COPY start-qemu.sh start-qemu.sh
+COPY --chmod=755 start-qemu.sh /riscv-env/start-qemu.sh
 
 # Set the entrypoint to the startup script
 ENTRYPOINT ["/bin/bash"]
