@@ -10,5 +10,6 @@ screen -dmS qemu qemu-system-riscv64 \
     -kernel /usr/lib/u-boot/qemu-riscv64_smode/uboot.elf \
     -append "root=LABEL=rootfs console=ttyS0" \
     -nographic
+sleep 120 # wait for qemu to boot
 sshpass -p 'root' scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r -P 2222 /duckdb/build/release/duckdb root@localhost:/root 
 sshpass -p 'root' ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -p 2222 root@localhost "chmod +x duckdb && ./duckdb -c 'PRAGMA platform;'"
