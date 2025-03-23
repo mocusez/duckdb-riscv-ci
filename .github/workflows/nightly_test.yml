@@ -1,0 +1,28 @@
+name: RISC-V DuckDB Tests
+
+on:
+  schedule:
+    # Run at midnight UTC (00:00)
+    - cron: '0 0 * * *'
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - README.md
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  nightly_test:
+    runs-on: ubuntu-latest
+    name: DuckDB RISC-V Nightly Test
+    steps:
+      - name: Checkout DuckDB repository
+        uses: actions/checkout@v4
+        with:
+          repository: duckdb/duckdb
+          path: duckdb
+          ref: main
+      
+      - name: Run RISC-V Tests
+        run: |
+          docker run -i --rm -v ${{ github.workspace }}/duckdb:/duckdb --workdir /duckdb ghcr.io/mocusez/duckdb-riscv-ci/duckdb-riscv-ci <<< "apt-get update && export DEBIAN_FRONTEND=noninteractive && apt-get install cmake ninja-build libssl-dev g++-riscv64-linux-gnu -y && GEN=ninja CC='riscv64-linux-gnu-gcc -march=rv64gcv_zicsr_zifencei_zihintpause_zvl256b' CXX='riscv64-linux-gnu-g++ -march=rv64gcv_zicsr_zifencei_zihintpause_zvl256b' DUCKDB_PLATFORM=linux_riscv make && cd / && ./start_qemu.sh && cd /duckdb && make clean && echo 'DOCKER TEST RESULT: SUCCESS' || (echo 'DOCKER TEST RESULT: FAILURE' && make clean)" 2>&1
